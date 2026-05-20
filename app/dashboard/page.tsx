@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 type Tab = 'search' | 'chats' | 'profile';
 
@@ -84,7 +85,16 @@ export default function DashboardPage() {
       <header className="border-b border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-6">
         <div className="mx-auto max-w-6xl">
           <div className="mb-4 flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-indigo-600">RoomPlus</h1>
+            <div className="flex items-center">
+              <Image
+                src="/logo.png"
+                alt="RoomPlus logo"
+                width={64}
+                height={64}
+                className="h-16 w-16"
+                style={{ objectFit: 'contain' }}
+              />
+            </div>
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleChatsClick}

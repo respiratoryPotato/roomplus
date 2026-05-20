@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 type LifestyleOption =
   | 'smoker'
@@ -122,9 +123,19 @@ export default function ProfileCreationPage() {
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.9fr]">
           <section className="space-y-6">
             <div className="max-w-xl">
-              <span className="inline-flex rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700">
-                Welcome to RoomPlus
-              </span>
+              <div className="mb-4 flex items-center gap-3">
+                <Image
+                  src="/logo.png"
+                  alt="RoomPlus logo"
+                  width={64}
+                  height={64}
+                  className="h-16 w-16"
+                  style={{ objectFit: 'contain' }}
+                />
+                <span className="inline-flex rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700">
+                  Welcome to RoomPlus
+                </span>
+              </div>
               <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
                 Create your roommate profile
               </h1>

@@ -157,7 +157,10 @@ export default function ViewProfilePage() {
                 <p className="text-sm text-slate-500">Joined {profile.joinDate}</p>
               </div>
             </div>
-            <button className="rounded-3xl bg-indigo-500 px-6 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">
+            <button
+              onClick={() => router.push(`/chats/${profile.id}`)}
+              className="rounded-3xl bg-indigo-500 px-6 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400"
+            >
               Connect
             </button>
           </div>
@@ -220,7 +223,10 @@ export default function ViewProfilePage() {
 
           {/* Action Buttons */}
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <button className="flex-1 rounded-3xl bg-indigo-500 px-6 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">
+            <button
+              onClick={() => router.push(`/chats/${profile.id}`)}
+              className="flex-1 rounded-3xl bg-indigo-500 px-6 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400"
+            >
               Send message
             </button>
             <button className="flex-1 rounded-3xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-900 transition hover:bg-slate-50">

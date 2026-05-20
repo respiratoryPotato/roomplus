@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
+  profile   Profile?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Profile {
+  id           Int     @id @default(autoincrement())
+  userId       Int     @unique
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lookingFor   String  // 'room' or 'roommate'
+  budget       String
+  moveInDate   String
+  smoker       Boolean @default(false)
+  pets         Boolean @default(false)
+  noPets       Boolean @default(false)
+  quiet        Boolean @default(false)
+  social       Boolean @default(false)
+  notes        String  @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

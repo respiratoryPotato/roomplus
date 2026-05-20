@@ -1,7 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+// Import Prisma generated client
+import { PrismaClient } from '../.prisma/client/client.js';
 
 const prismaClientSingleton = () => {
-  return new (PrismaClient as any)();
+  return new PrismaClient({});
 };
 
 declare global {

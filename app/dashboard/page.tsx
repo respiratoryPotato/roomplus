@@ -79,6 +79,21 @@ export default function DashboardPage() {
     router.push('/chats');
   };
 
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const searchResults = normalizedQuery
+    ? mockRoommates.filter((roommate) => {
+        const textFields = [
+          roommate.name,
+          roommate.budget,
+          roommate.moveIn,
+          roommate.age.toString(),
+          roommate.highlights.join(' '),
+        ].join(' ').toLowerCase();
+
+        return textFields.includes(normalizedQuery);
+      })
+    : mockRoommates;
+
   return (
     <div className="flex h-screen flex-col bg-slate-50 text-slate-950">
       {/* Header */}
@@ -135,72 +150,85 @@ export default function DashboardPage() {
             <div>
               <div className="mb-6">
                 <h2 className="text-lg font-semibold text-slate-900">
-                  Recommended matches for you
+                  {searchQuery.trim() ? 'Search results' : 'Recommended matches for you'}
                 </h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Based on your preferences, here are some great options
+                  {searchQuery.trim()
+                    ? `Showing profiles that match "${searchQuery.trim()}"`
+                    : 'Based on your preferences, here are some great options'}
                 </p>
               </div>
 
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {mockRoommates.map((roommate) => (
-                  <div
-                    key={roommate.id}
-                    className="flex flex-col rounded-3xl border border-slate-200 bg-white p-5 shadow-md transition hover:shadow-lg"
-                  >
-                    {/* Avatar */}
-                    <div className="mb-4 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="text-4xl">{roommate.image}</div>
-                        <div>
-                          <h3 className="font-semibold text-slate-900">
-                            {roommate.name}
-                          </h3>
-                          <p className="text-xs text-slate-500">{roommate.age}</p>
+              {searchQuery.trim() && searchResults.length === 0 ? (
+                <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
+                  <h3 className="text-xl font-semibold text-slate-900">
+                    No matching profiles found
+                  </h3>
+                  <p className="mt-2 text-slate-600">
+                    Try another name, budget, or move-in date.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {searchResults.map((roommate) => (
+                    <div
+                      key={roommate.id}
+                      className="flex flex-col rounded-3xl border border-slate-200 bg-white p-5 shadow-md transition hover:shadow-lg"
+                    >
+                      {/* Avatar */}
+                      <div className="mb-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="text-4xl">{roommate.image}</div>
+                          <div>
+                            <h3 className="font-semibold text-slate-900">
+                              {roommate.name}
+                            </h3>
+                            <p className="text-xs text-slate-500">{roommate.age}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleLike(roommate.id)}
+                          className="text-2xl transition"
+                        >
+                          {likedCards.has(roommate.id) ? '❤️' : '🤍'}
+                        </button>
+                      </div>
+
+                      {/* Details */}
+                      <div className="mb-4 space-y-2 text-sm">
+                        <div className="flex items-center gap-2 text-slate-700">
+                          <span className="font-medium text-slate-500">Budget:</span>
+                          <span>{roommate.budget}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-slate-700">
+                          <span className="font-medium text-slate-500">Move-in:</span>
+                          <span>{roommate.moveIn}</span>
                         </div>
                       </div>
+
+                      {/* Highlights */}
+                      <div className="mb-4 flex flex-wrap gap-2">
+                        {roommate.highlights.map((highlight, idx) => (
+                          <span
+                            key={idx}
+                            className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700"
+                          >
+                            {highlight}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Action Button */}
                       <button
-                        onClick={() => handleLike(roommate.id)}
-                        className="text-2xl transition"
+                        onClick={() => router.push(`/profile/${roommate.id}`)}
+                        className="mt-auto w-full rounded-2xl border border-indigo-300 bg-indigo-50 py-2 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-100"
                       >
-                        {likedCards.has(roommate.id) ? '❤️' : '🤍'}
+                        View profile
                       </button>
                     </div>
-
-                    {/* Details */}
-                    <div className="mb-4 space-y-2 text-sm">
-                      <div className="flex items-center gap-2 text-slate-700">
-                        <span className="font-medium text-slate-500">Budget:</span>
-                        <span>{roommate.budget}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-slate-700">
-                        <span className="font-medium text-slate-500">Move-in:</span>
-                        <span>{roommate.moveIn}</span>
-                      </div>
-                    </div>
-
-                    {/* Highlights */}
-                    <div className="mb-4 flex flex-wrap gap-2">
-                      {roommate.highlights.map((highlight, idx) => (
-                        <span
-                          key={idx}
-                          className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700"
-                        >
-                          {highlight}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Action Button */}
-                    <button
-                      onClick={() => router.push(`/profile/${roommate.id}`)}
-                      className="mt-auto w-full rounded-2xl border border-indigo-300 bg-indigo-50 py-2 text-sm font-semibold text-indigo-600 transition hover:bg-indigo-100"
-                    >
-                      View profile
-                    </button>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

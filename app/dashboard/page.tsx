@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -14,6 +14,19 @@ interface RoommateCard {
   moveIn: string;
   highlights: string[];
   image: string;
+}
+
+interface ProfileData {
+  userId: number;
+  lookingFor: 'room' | 'roommate';
+  budget: string;
+  moveInDate: string;
+  smoker: boolean;
+  pets: boolean;
+  noPets: boolean;
+  quiet: boolean;
+  social: boolean;
+  notes: string;
 }
 
 const mockRoommates: RoommateCard[] = [
@@ -60,6 +73,30 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<Tab>('search');
   const [searchQuery, setSearchQuery] = useState('');
   const [likedCards, setLikedCards] = useState<Set<number>>(new Set());
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const [profileError, setProfileError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const response = await fetch('/api/profile?userId=1');
+        const data = await response.json();
+
+        if (response.ok && data) {
+          setProfile(data);
+        } else {
+          setProfileError(data.error || 'Unable to load profile');
+        }
+      } catch (error) {
+        setProfileError('Unable to load profile');
+      } finally {
+        setIsProfileLoading(false);
+      }
+    }
+
+    loadProfile();
+  }, []);
 
   const handleLike = (id: number) => {
     const newLiked = new Set(likedCards);
@@ -232,10 +269,68 @@ export default function DashboardPage() {
           {activeTab === 'profile' && (
             <div className="rounded-3xl border border-slate-200 bg-white p-8">
               <h2 className="text-xl font-semibold text-slate-900">My Profile</h2>
-              <p className="mt-4 text-slate-600">
-                Your profile information will appear here. You can edit your
-                preferences and lifestyle details.
-              </p>
+
+              {isProfileLoading ? (
+                <p className="mt-4 text-slate-600">Loading profile...</p>
+              ) : profileError ? (
+                <p className="mt-4 text-slate-600 text-rose-600">
+                  {profileError}
+                </p>
+              ) : profile ? (
+                <div className="mt-6 space-y-6">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-3xl bg-slate-50 p-5">
+                      <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
+                        Looking for
+                      </p>
+                      <p className="mt-3 text-xl font-semibold text-slate-900">
+                        {profile.lookingFor === 'room' ? 'A room' : 'A roommate'}
+                      </p>
+                    </div>
+                    <div className="rounded-3xl bg-slate-50 p-5">
+                      <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
+                        Budget
+                      </p>
+                      <p className="mt-3 text-xl font-semibold text-slate-900">
+                        ${profile.budget}
+                      </p>
+                    </div>
+                    <div className="rounded-3xl bg-slate-50 p-5">
+                      <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
+                        Move-in
+                      </p>
+                      <p className="mt-3 text-xl font-semibold text-slate-900">
+                        {profile.moveInDate}
+                      </p>
+                    </div>
+                    <div className="rounded-3xl bg-slate-50 p-5">
+                      <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
+                        Lifestyle
+                      </p>
+                      <div className="mt-3 space-y-2 text-sm text-slate-700">
+                        {profile.smoker && <p>Smoker</p>}
+                        {profile.pets && <p>Has pets</p>}
+                        {profile.noPets && <p>Pet-free home preferred</p>}
+                        {profile.quiet && <p>Prefers quiet spaces</p>}
+                        {profile.social && <p>Enjoys social living</p>}
+                        {!profile.smoker && !profile.pets && !profile.noPets && !profile.quiet && !profile.social && (
+                          <p className="text-slate-500">No lifestyle preferences selected.</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-3xl bg-slate-50 p-5">
+                    <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
+                      Notes
+                    </p>
+                    <p className="mt-3 text-slate-700">{profile.notes}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="mt-4 text-slate-600">No profile data available.</p>
+              )}
+
               <button
                 onClick={() => router.push('/')}
                 className="mt-6 rounded-2xl bg-indigo-500 px-6 py-2 text-sm font-semibold text-white transition hover:bg-indigo-400"

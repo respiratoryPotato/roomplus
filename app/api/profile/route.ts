@@ -60,8 +60,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
     }
 
-    const profile = profileStore.get(id) ?? (id === 1 ? defaultProfile : null);
-    return NextResponse.json(profile, { status: 200 });
+    let profile = profileStore.get(id) ?? null;
+    let isDefault = false;
+    if (!profile && id === 1) {
+      profile = defaultProfile;
+      isDefault = true;
+    }
+
+    // Attach a flag to indicate this is the server-side default fallback
+    const responseBody = profile ? { ...profile, _isDefault: isDefault } : null;
+    return NextResponse.json(responseBody, { status: 200 });
   } catch (error) {
     console.error('Error fetching profile:', error);
     return NextResponse.json(

@@ -48,17 +48,22 @@ export default function ProfileCreationPage() {
         const data = await response.json();
 
         if (data) {
-          setLookingFor(data.lookingFor as 'room' | 'roommate');
-          setBudget(data.budget);
-          setMoveInDate(data.moveInDate);
-          setLifestyle({
-            smoker: data.smoker,
-            pets: data.pets,
-            noPets: data.noPets,
-            quiet: data.quiet,
-            social: data.social,
-          });
-          setNotes(data.notes);
+          // If the API returned the server-side default fallback (_isDefault=true),
+          // don't populate the form so the defaults remain blank for first-time users.
+          const isDefaultFallback = (data as any)._isDefault === true;
+          if (!isDefaultFallback) {
+            setLookingFor(data.lookingFor as 'room' | 'roommate');
+            setBudget(data.budget);
+            setMoveInDate(data.moveInDate);
+            setLifestyle({
+              smoker: data.smoker,
+              pets: data.pets,
+              noPets: data.noPets,
+              quiet: data.quiet,
+              social: data.social,
+            });
+            setNotes(data.notes);
+          }
         }
       } catch (error) {
         console.error('Error loading profile:', error);
